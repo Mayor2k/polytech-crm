@@ -1,4 +1,6 @@
-crm/__pycache_
-core/__pycache___
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
 core/migrations
 .git
