@@ -26,7 +26,7 @@ class Lead(models.Model):
     opportunity_currency = models.PositiveSmallIntegerField(default=1)
     _stage_id = models.IntegerField("Стадия сделки", default=0)
     description = models.TextField("Описание", blank=True)
-
+    
     def __str__(self):
         return self.title
     
@@ -43,3 +43,24 @@ class Lead(models.Model):
         {"id": self.id, "stage_id": value})
         conn.commit()
         conn.close()
+
+class StageContainer(models.Model):
+    entity = models.CharField("Сущность контейнера", max_length=20, blank=False, default="lead")
+    title = models.CharField("Название контейнера стадий", max_length=50, blank=False)
+
+    def __str__(self):
+        return self.title
+
+    def getAllElements(self):
+        container = StageContainer.objects.get(id=self.id) 
+        return StageId.objects.filter(container=container)
+
+class StageId(models.Model):
+    container = models.ForeignKey(StageContainer, on_delete=models.SET_NULL, null=True)
+    color = models.CharField("Цвет", max_length=6, default="#ffffff")
+
+    def getAllElements(self):
+        if self.container=="lead":
+            return Lead.objects.filter(_stage_id=self.id)
+        elif self.container=="deal":
+            return Lead.objects.filter(_stage_id=self.id)
