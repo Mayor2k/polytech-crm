@@ -13,17 +13,36 @@ class Contact(models.Model):
         return self.first_name + " " + self.last_name
 
 class CrmEntity(models.Model):
-    name = models.CharField("ФИО клиента", max_length=50, blank=True)
-    phone_number = models.CharField("Номер телефона", max_length=15, blank=True)
-    email = models.EmailField("Почта", blank=True)
-    contact = models.ForeignKey("Contact", on_delete=models.SET_NULL, null=True)
-    opportunity = models.FloatField(default=0)
-    description = models.TextField("Описание", blank=True)
+    _name = models.CharField("ФИО клиента", max_length=50, blank=True)
+    _phone_number = models.CharField("Номер телефона", max_length=15, blank=True)
+    _email = models.EmailField("Почта", blank=True)
+    _contact = models.ForeignKey("Contact", on_delete=models.SET_NULL, null=True)
+    _opportunity = models.FloatField(default=0)
+    _short_description = models.CharField(max_length=50, blank=True)
+    _description = models.TextField("Описание", blank=True)
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def title(self,value):
+        self._name = value
+        self.updateDatabase("core_lead","_title",value,"crmentity_ptr_id",self.id)
+
+    def updateDatabase(self,table_name,column,value,where_column,where_value):
+        conn = sqlite3.connect(os.path.join('db.sqlite3'))
+        cursor = conn.cursor()
+        cursor.execute("UPDATE %s SET %s=:value1 WHERE %s=:value2;"
+        %(table_name,column,where_column),
+        {"value1": value, "value2": where_value})
+        conn.commit()
+        conn.close()
 
 class Lead(CrmEntity):
     _title = models.CharField("Название лида", max_length=50, default="Лид №%s"%(str(id)))
     _stage_id = models.IntegerField("Стадия сделки", default=1)
-    
+
     def __str__(self):
         return self._title
 
@@ -34,17 +53,12 @@ class Lead(CrmEntity):
     @title.setter
     def title(self,value):
         self._title = value
-        conn = sqlite3.connect(os.path.join('db.sqlite3'))
-        cursor = conn.cursor()
-        cursor.execute("UPDATE core_lead SET _title=:title WHERE crmentity_ptr_id=:id;",
-        {"id": self.id, "title": value})
-        conn.commit()
-        conn.close()
-    
+        self.updateDatabase("core_lead","_title",value,"crmentity_ptr_id",self.id)
+
     @property
     def stage_id(self):
         return self._stage_id
-    
+
     @stage_id.setter
     def stage_id(self,value):
         self._stage_id = value
@@ -66,7 +80,7 @@ class StageContainer(models.Model):
         return self.title
 
     def getAllElements(self):
-        container = StageContainer.objects.get(id=self.id) 
+        container = StageContainer.objects.get(id=self.id)
         return StageId.objects.filter(container=container)
 
 class StageId(models.Model):
