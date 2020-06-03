@@ -1,1 +1,0 @@
-$("body").append("<p>It's part was added by jquery</p>");

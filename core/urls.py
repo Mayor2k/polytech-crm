@@ -5,4 +5,5 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.index, name = 'index'),
+    path('lead', views.lead, name = 'lead')
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

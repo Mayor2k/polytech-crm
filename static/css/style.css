@@ -1,6 +1,21 @@
-body{
-    background-color: #beceda;
+.navigation-bar{
+    list-style-type: none;
 }
-p{
-    color: white;
+.navigation-bar li{
+    font-size: 21px;
+    padding-bottom: 10px;
+}
+.kanban{
+    width: 100%;
+}
+.crm-lead-card{
+    padding: 8px 16px 8px 16px;
+    align-items: center;
+}
+.lead-header{
+    background-color: #F8F9FA;
+    padding: 2px 16px 0px 16px;
+}
+.form-check-input{
+    margin-left: 0!important;
 }
