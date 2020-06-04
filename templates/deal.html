@@ -2,7 +2,7 @@
 {% block title%}Сделки{% endblock %}
 
 {% block content %}
-    <div class="deal-header">
+    <div class="crm-header">
         <div class="row">
             <div class="col-1">
                 <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
@@ -25,7 +25,7 @@
         </div>
     </div>
     {% for i in items %}
-        <div class="crm-deal-card crm-deal-card-id-{{ i.id }}">
+        <div class="crm-card crm-deal-card-id-{{ i.id }}">
             <div class="row">
                 <div class="col-1">
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">

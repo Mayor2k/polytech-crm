@@ -1,0 +1,52 @@
+{% extends 'index.html' %}
+{% block title%}Компании{% endblock %}
+
+{% block content %}
+    <div class="crm-header">
+        <div class="row">
+            <div class="col-1">
+                <input class="form-check-input" type="checkbox" value="" id="defaultCheckMain">
+            </div>
+            <div class="col-1">
+                <img src="https://img.icons8.com/ios/50/000000/settings.png" alt="settings" width="16" height="16"/>
+            </div>
+            <div class="col-3">
+                <p>Компания</p>
+            </div>
+            <div class="col-2">
+              <p>Ответственный</p>
+            </div>
+            <div class="col-3">
+                <p>Дата создания</p>
+            </div>
+            <div class="col-2">
+                <p>Краткое описание</p>
+            </div>
+        </div>
+    </div>
+    {% for i in items %}
+        <div class="crm-card crm-contact-card-id-{{ i.id }}">
+            <div class="row">
+                <div class="col-1">
+                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck{{ i.id }}">
+                </div>
+                <div class="col-1">
+                    <img src="http://127.0.0.1:8000/static/img/menu.svg" alt="menu" width="16" height="16">
+                </div>
+                <div class="col-3">
+                    <a href="">{{ i.name }}</a>
+                    <p>{{ i.activity }}</p>
+                </div>
+                <div class="col-2">
+                    <p>Я</p>
+                </div>
+                <div class="col-2">
+                    <p>{{ i.getFormattedCreationDate }}</p>
+                </div>
+                <div class="col-3">
+                    <p>{{ i.description }}</p>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

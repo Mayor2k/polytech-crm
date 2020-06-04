@@ -1,25 +1,159 @@
 from django.db import models
+import datetime
 import sqlite3
 import os
 
+class Company(models.Model):
+    _name = models.CharField("Название компании", max_length=50, blank=False)
+    _activity = models.CharField("Деятельость", max_length=50, blank=True)
+    _email = models.EmailField("email")
+    _phone_number = models.CharField("Номер телефона",max_length=15,blank=True)
+    _website = models.CharField("Сайт", max_length=100, blank=True)
+    _description = models.CharField("Компания", max_length=100, blank=True)
+    created_time = models.DateTimeField("Дата создания", auto_now_add=True)
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self,value):
+        self._name = value
+        self.updateDatabase("core_company","_name",value,"id",self.id)
+
+    @property
+    def activity(self):
+        return self._activity
+
+    @activity.setter
+    def activity(self,value):
+        self._activity = value
+        self.updateDatabase("core_company","_activity",value,"id",self.id)
+
+
+    @property
+    def phone_number(self):
+        return self._phone_number
+
+    @phone_number.setter
+    def phone_number(self,value):
+        self._phone_number = value
+        self.updateDatabase("core_company","_phone_number",value,"id",self.id)
+    
+    @property
+    def email(self):
+        return self._email
+
+    @email.setter
+    def email(self,value):
+        self._email = value
+        self.updateDatabase("core_company","_email",value,"id",self.id)
+
+    @property
+    def website(self):
+        return self._website
+
+    @website.setter
+    def website(self,value):
+        self._website = value
+        self.updateDatabase("core_company","_website",value,"id",self.id)
+
+    @property
+    def description(self):
+        return self._website
+
+    @description.setter
+    def description(self,value):
+        self._description = value
+        self.updateDatabase("core_company","_description",value,"id",self.id)
+    
+    def getFormattedCreationDateWithTime(self):
+        return self.created_time.strftime("%Y-%m-%d %H:%M:%S")
+    
+    def getFormattedCreationDate(self):
+        return self.created_time.strftime("%Y-%m-%d")
+    
+    def updateDatabase(self,table_name,column,value,where_column,where_value):
+        conn = sqlite3.connect(os.path.join('db.sqlite3'))
+        cursor = conn.cursor()
+        cursor.execute("UPDATE %s SET %s=:value1 WHERE %s=:value2;"
+        %(table_name,column,where_column),
+        {"value1": value, "value2": where_value})
+        conn.commit()
+        conn.close()
+
 class Contact(models.Model):
-    first_name = models.CharField("Имя", max_length=30)
-    last_name = models.CharField("Фамилия", max_length=30)
-    phone_number = models.CharField("Номер телефона", max_length=15, blank=True)
-    email = models.EmailField("Почта", blank=True)
-    description = models.TextField("Описание", blank=True)
+    _first_name = models.CharField("Имя", max_length=30)
+    _last_name = models.CharField("Фамилия", max_length=30)
+    _phone_number = models.CharField("Номер телефона", max_length=15, blank=True)
+    _email = models.EmailField("Почта", blank=True)
+    _type = models.CharField("Тип клиента", max_length=30, default="Покупатель")
+    _description = models.TextField("Описание", blank=True)
+    _company = models.ForeignKey("Company", on_delete=models.SET_NULL, null=True)
+    created_time = models.DateTimeField("Дата создания", auto_now_add=True)
 
     def __str__(self):
         return self.first_name + " " + self.last_name
 
-class CrmEntity(models.Model):
-    _name = models.CharField("ФИО клиента", max_length=50, blank=True)
-    _phone_number = models.CharField("Номер телефона", max_length=15, blank=True)
-    _email = models.EmailField("Почта", blank=True)
-    _contact = models.ForeignKey(Contact, on_delete=models.SET_NULL, null=True)
-    _opportunity = models.FloatField(default=0)
-    _short_description = models.CharField(max_length=50, blank=True)
-    _description = models.TextField("Описание", blank=True)
+    @property
+    def first_name(self):
+        return self._first_name
+
+    @first_name.setter
+    def first_name(self,value):
+        self._first_name = value
+        self.updateDatabase("core_contact","_first_name",value,"id",self.id)
+
+    @property
+    def last_name(self):
+        return self._last_name
+
+    @last_name.setter
+    def last_name(self,value):
+        self._last_name = value
+        self.updateDatabase("core_contact","_last_name",value,"id",self.id)
+
+    @property
+    def phone_number(self):
+        return self._phone_number
+
+    @phone_number.setter
+    def phone_number(self,value):
+        self._phone_number = value
+        self.updateDatabase("core_contact","_phone_number",value,"id",self.id)
+    
+    @property
+    def email(self):
+        return self._email
+
+    @email.setter
+    def email(self,value):
+        self._email = value
+        self.updateDatabase("core_contact","_email",value,"id",self.id)
+    
+    @property
+    def type(self):
+        return self._type
+
+    @type.setter
+    def type(self,value):
+        self._type = value
+        self.updateDatabase("core_contact","_type",value,"id",self.id)
+
+    @property
+    def description(self):
+        return self._description
+
+    @description.setter
+    def description(self,value):
+        self._description = value
+        self.updateDatabase("core_contact","_description",value,"id",self.id)
+
+    def getFormattedCreationDateWithTime(self):
+        return self.created_time.strftime("%Y-%m-%d %H:%M:%S")
+    
+    def getFormattedCreationDate(self):
+        return self.created_time.strftime("%Y-%m-%d")
 
     def updateDatabase(self,table_name,column,value,where_column,where_value):
         conn = sqlite3.connect(os.path.join('db.sqlite3'))
@@ -29,6 +163,14 @@ class CrmEntity(models.Model):
         {"value1": value, "value2": where_value})
         conn.commit()
         conn.close()
+    
+class CrmEntity(models.Model):
+    _name = models.CharField("ФИО клиента", max_length=50, blank=True)
+    _phone_number = models.CharField("Номер телефона", max_length=15, blank=True)
+    _email = models.EmailField("Почта", blank=True)
+    _contact = models.ForeignKey(Contact, on_delete=models.SET_NULL, null=True)
+    _opportunity = models.FloatField(default=0)
+    _description = models.TextField("Описание", blank=True)
 
     @property
     def name(self):
@@ -76,15 +218,6 @@ class CrmEntity(models.Model):
         self.updateDatabase("core_crmentity","_opportunity",value,"id",self.id)
 
     @property
-    def short_description(self):
-        return self._short_description
-
-    @short_description.setter
-    def short_description(self,value):
-        self._short_description = value
-        self.updateDatabase("core_crmentity","_short_description",value,"id",self.id)
-
-    @property
     def description(self):
         return self._description
 
@@ -92,6 +225,15 @@ class CrmEntity(models.Model):
     def description(self,value):
         self._description = value
         self.updateDatabase("core_crmentity","_description",value,"id",self.id)
+
+    def updateDatabase(self,table_name,column,value,where_column,where_value):
+        conn = sqlite3.connect(os.path.join('db.sqlite3'))
+        cursor = conn.cursor()
+        cursor.execute("UPDATE %s SET %s=:value1 WHERE %s=:value2;"
+        %(table_name,column,where_column),
+        {"value1": value, "value2": where_value})
+        conn.commit()
+        conn.close()
     
 class Lead(CrmEntity):
     _title = models.CharField("Название лида", max_length=50, default="Лид №%s"%(str(id)))
@@ -166,19 +308,6 @@ class StageContainer(models.Model):
     def __str__(self):
         return self.title
 
-    def updateDatabase(self,table_name,column,value,where_column,where_value):
-        conn = sqlite3.connect(os.path.join('db.sqlite3'))
-        cursor = conn.cursor()
-        cursor.execute("UPDATE %s SET %s=:value1 WHERE %s=:value2;"
-        %(table_name,column,where_column),
-        {"value1": value, "value2": where_value})
-        conn.commit()
-        conn.close()
-
-    def getAllElements(self):
-        container = StageContainer.objects.get(id=self.id)
-        return StageId.objects.filter(container=container)
-
     @property
     def entity(self):
         return self._entity
@@ -197,10 +326,9 @@ class StageContainer(models.Model):
         self._title = value
         self.updateDatabase("core_stagecontainer","_title",value,"id",self.id)
 
-class StageId(models.Model):
-    _container = models.ForeignKey(StageContainer, on_delete=models.SET_NULL, null=True)
-    _name = models.CharField("Название стадии", max_length=30, blank=False, default="ti")
-    _color = models.CharField("Цвет", max_length=6, default="#ffffff")
+    def getAllElements(self):
+        container = StageContainer.objects.get(id=self.id)
+        return StageId.objects.filter(container=container)
 
     def updateDatabase(self,table_name,column,value,where_column,where_value):
         conn = sqlite3.connect(os.path.join('db.sqlite3'))
@@ -210,6 +338,11 @@ class StageId(models.Model):
         {"value1": value, "value2": where_value})
         conn.commit()
         conn.close()
+
+class StageId(models.Model):
+    _container = models.ForeignKey(StageContainer, on_delete=models.SET_NULL, null=True)
+    _name = models.CharField("Название стадии", max_length=30, blank=False, default="ti")
+    _color = models.CharField("Цвет", max_length=6, default="#ffffff")
 
     @property
     def container(self):
@@ -237,6 +370,15 @@ class StageId(models.Model):
     def color(self,value):
         self._color = value
         self.updateDatabase("core_stageid","_color",value,"id",self.id)
+
+    def updateDatabase(self,table_name,column,value,where_column,where_value):
+        conn = sqlite3.connect(os.path.join('db.sqlite3'))
+        cursor = conn.cursor()
+        cursor.execute("UPDATE %s SET %s=:value1 WHERE %s=:value2;"
+        %(table_name,column,where_column),
+        {"value1": value, "value2": where_value})
+        conn.commit()
+        conn.close()
 
     def getAllElements(self):
         if self._container._entity=="lead":
