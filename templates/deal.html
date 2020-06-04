@@ -1,8 +1,8 @@
 {% extends 'index.html' %}
-{% block title%}Лиды{% endblock %}
+{% block title%}Сделки{% endblock %}
 
 {% block content %}
-    <div class="lead-header">
+    <div class="deal-header">
         <div class="row">
             <div class="col-1">
                 <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
@@ -17,7 +17,7 @@
               <p>Владелец</p>
             </div>
             <div class="col-3">
-                <p>Стадия лида</p>
+                <p>Стадия сделки</p>
             </div>
             <div class="col-2">
                 <p>Описние</p>
@@ -25,7 +25,7 @@
         </div>
     </div>
     {% for i in items %}
-        <div class="crm-lead-card crm-lead-card-id-{{ i.id }}">
+        <div class="crm-deal-card crm-deal-card-id-{{ i.id }}">
             <div class="row">
                 <div class="col-1">
                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
@@ -46,7 +46,7 @@
                 </div>
                 <div class="col-3">
                     <div class="progress lead-progress-bar">
-                        {% for stage in lead_stages %}
+                        {% for stage in deal_stages %}
                             {% if i.stage_id >= stage.id %}
                                 <div class="progress-bar" style="background-color: #{{ i.getStageId.color }}!important;width: {{ progress_width }}%;"
                                 role="progressbar" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
